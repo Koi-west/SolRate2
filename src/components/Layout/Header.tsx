@@ -21,7 +21,7 @@ const Header = () => {
       if ("solana" in window && window.solana?.isPhantom) {
         console.log("Phantom wallet found!");
         try {
-          const response = await window.solana.connect({ onlyIfTrusted: true });
+          const response = await window.solana.connect(); // 移除了 { onlyIfTrusted: true } 参数
           console.log("Connected with Public Key:", response.publicKey.toString());
           setWalletAddress(response.publicKey.toString());
         } catch (error) {
