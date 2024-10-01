@@ -4,27 +4,30 @@ import React, { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import Link from 'next/link';
 import Logo from '../Logo';
+import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom';
+
+declare global {
+  interface Window {
+    solana?: PhantomWalletAdapter;
+  }
+}
 
 const Header = () => {
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check if Phantom Wallet is installed
     const checkIfWalletIsConnected = async () => {
-      if ("solana" in window) {
-        const solana = window.solana;
-        if (solana.isPhantom) {
-          console.log("Phantom wallet found!");
-          try {
-            const response = await solana.connect({ onlyIfTrusted: true });
-            console.log(
-              "Connected with Public Key:",
-              response.publicKey.toString()
-            );
-            setWalletAddress(response.publicKey.toString());
-          } catch (error) {
-            console.error(error);
-          }
+      if ("solana" in window && window.solana?.isPhantom) {
+        console.log("Phantom wallet found!");
+        try {
+          const response = await window.solana.connect({ onlyIfTrusted: true });
+          console.log(
+            "Connected with Public Key:",
+            response.publicKey.toString()
+          );
+          setWalletAddress(response.publicKey.toString());
+        } catch (error) {
+          console.error(error);
         }
       } else {
         console.log("Solana object not found! Get a Phantom Wallet 👻");
@@ -35,19 +38,16 @@ const Header = () => {
   }, []);
 
   const connectWallet = async () => {
-    if ("solana" in window) {
-      const solana = window.solana;
-      if (solana.isPhantom) {
-        try {
-          const response = await solana.connect();
-          console.log(
-            "Connected with Public Key:",
-            response.publicKey.toString()
-          );
-          setWalletAddress(response.publicKey.toString());
-        } catch (error) {
-          console.error(error);
-        }
+    if ("solana" in window && window.solana?.isPhantom) {
+      try {
+        const response = await window.solana.connect();
+        console.log(
+          "Connected with Public Key:",
+          response.publicKey.toString()
+        );
+        setWalletAddress(response.publicKey.toString());
+      } catch (error) {
+        console.error(error);
       }
     } else {
       window.open("https://phantom.app/", "_blank");
