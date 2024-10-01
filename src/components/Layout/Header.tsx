@@ -8,23 +8,21 @@ import { PhantomWalletAdapter } from '@solana/wallet-adapter-phantom';
 
 declare global {
   interface Window {
-    solana?: PhantomWalletAdapter;
+    solana?: { isPhantom?: boolean } & PhantomWalletAdapter;
   }
 }
 
 const Header = () => {
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
 
+  // Check if wallet is connected on component mount
   useEffect(() => {
     const checkIfWalletIsConnected = async () => {
       if ("solana" in window && window.solana?.isPhantom) {
         console.log("Phantom wallet found!");
         try {
           const response = await window.solana.connect({ onlyIfTrusted: true });
-          console.log(
-            "Connected with Public Key:",
-            response.publicKey.toString()
-          );
+          console.log("Connected with Public Key:", response.publicKey.toString());
           setWalletAddress(response.publicKey.toString());
         } catch (error) {
           console.error(error);
@@ -37,14 +35,12 @@ const Header = () => {
     checkIfWalletIsConnected();
   }, []);
 
+  // Function to connect wallet manually
   const connectWallet = async () => {
     if ("solana" in window && window.solana?.isPhantom) {
       try {
         const response = await window.solana.connect();
-        console.log(
-          "Connected with Public Key:",
-          response.publicKey.toString()
-        );
+        console.log("Connected with Public Key:", response.publicKey.toString());
         setWalletAddress(response.publicKey.toString());
       } catch (error) {
         console.error(error);
