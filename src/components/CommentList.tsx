@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import StarRating from './StarRating';
 
 interface Comment {
@@ -19,7 +20,7 @@ const CommentItem: React.FC<Comment> = ({ name, date, rating, weight, content })
         <span className="text-gray-600 ml-2 text-xs">{date}</span>
       </div>
       <div className="bg-blue-500 text-white px-2 py-1 rounded-full text-xs">
-        Weight: {weight}
+        Weight: {weight.toFixed(1)}
       </div>
     </div>
     <StarRating rating={rating} size="small" />
@@ -47,31 +48,42 @@ const CommentList: React.FC<{ highlightCount: number; totalCount: number }> = ({
       name: `User ${index + 1}`,
       date: "2024-9-28",
       rating: Math.floor(Math.random() * 5) + 1,
-      weight: Number((Math.random() * 2 + 7).toFixed(1)),
+      weight: Number((Math.random() * 4 + 1).toFixed(1)),
       content: "Very good project. Well prepared and good user experience. This is one of my favorite projects on Solana. Very good project. Well prepared and good user experience. This is one of my favorite projects on Solana."
     }));
   };
 
-  const highlightComments = generateComments(highlightCount);
-  const allComments = generateComments(totalCount);
+  const displayCount = 5; // 设置要显示的评论数量
+  const highlightComments = generateComments(highlightCount).slice(0, displayCount);
+  const allComments = generateComments(totalCount).slice(0, displayCount);
 
   return (
     <>
-      <div className="bg-white rounded-lg shadow-md p-4 mb-6">
+      <div className="bg-white rounded-lg shadow-md p-4 mb-6 relative">
         <h2 className="text-xl font-bold mb-4 text-black">Highlight Comment /{highlightCount}</h2>
-        <div className="max-h-[600px] overflow-y-auto">
+        <div className="max-h-[600px] overflow-y-auto mb-12">
           {highlightComments.map((comment, index) => (
             <CommentItem key={index} {...comment} />
           ))}
         </div>
+        <div className="absolute bottom-4 right-4">
+          <Link href="/all-highlights" className="bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-medium">
+            More
+          </Link>
+        </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow-md p-4">
+      <div className="bg-white rounded-lg shadow-md p-4 relative">
         <h2 className="text-xl font-bold mb-4 text-black">All Comment /{totalCount}</h2>
-        <div className="max-h-[600px] overflow-y-auto">
+        <div className="mb-12">
           {allComments.map((comment, index) => (
             <CommentItem key={index} {...comment} />
           ))}
+        </div>
+        <div className="absolute bottom-4 right-4">
+          <Link href="/all-comments" className="bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-medium">
+            More
+          </Link>
         </div>
       </div>
     </>
