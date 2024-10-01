@@ -18,12 +18,15 @@ const Header = () => {
   // Check if wallet is connected on component mount
   useEffect(() => {
     const checkIfWalletIsConnected = async () => {
-      if ("solana" in window && window.solana?.isPhantom) {
+      if (typeof window !== 'undefined' && window.solana?.isPhantom) {
         console.log("Phantom wallet found!");
         try {
-          const response = await window.solana.connect(); // 移除了 { onlyIfTrusted: true } 参数
-          console.log("Connected with Public Key:", response.publicKey.toString());
-          setWalletAddress(response.publicKey.toString());
+          const publicKey = window.solana.publicKey;
+          if (publicKey) {
+            const address = publicKey.toString();
+            console.log("Connected with Public Key:", address);
+            setWalletAddress(address);
+          }
         } catch (error) {
           console.error(error);
         }
@@ -37,11 +40,15 @@ const Header = () => {
 
   // Function to connect wallet manually
   const connectWallet = async () => {
-    if ("solana" in window && window.solana?.isPhantom) {
+    if (typeof window !== 'undefined' && window.solana?.isPhantom) {
       try {
-        const response = await window.solana.connect();
-        console.log("Connected with Public Key:", response.publicKey.toString());
-        setWalletAddress(response.publicKey.toString());
+        await window.solana.connect();
+        const publicKey = window.solana.publicKey;
+        if (publicKey) {
+          const address = publicKey.toString();
+          console.log("Connected with Public Key:", address);
+          setWalletAddress(address);
+        }
       } catch (error) {
         console.error(error);
       }
